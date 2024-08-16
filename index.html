@@ -365,8 +365,51 @@
         }
 
         function getCustomMessage(score) {
-            // ... (getCustomMessage function remains unchanged) ...
-        }
+    if (score === 0) return "Not even a chair emoji can save you. 🪑";
+    if (score < 5) return "Don't worry, you'll chair-ish your next attempt more! 🪑";
+    if (score < 10) return "You missed the chair but at least you didn’t fall! 😂";
+    if (score < 15) return "You've got the right seat of mind! Keep going! 💺";
+    if (score < 20) return "At least you tried... and that's what chairs are for. 🪑";
+    if (score < 30) return "This is low-key sad, but you're still vibing. 💔";
+    if (score < 40) return "You're on the edge of your seat, keep at it! 🪑";
+    if (score < 50) return "You’re almost there, just one more push, chair bro! 😤";
+    if (score < 60) return "Chair up! You’re doing great! 😄";
+    if (score === 69) return "Nice. 😏";
+    if (score < 80) return "You're really standing out in the chair crowd! 👏";
+    if (score < 100) return "You’re doing great, sweetie! But those chairs are quick. 😘";
+    if (score < 120) return "You're not just sitting around, you're making moves! 💨";
+    if (score < 140) return "You're really chair-ishing the moment, aren't you? ✨";
+    if (score < 160) return "Your effort is chair-rific! Keep it up! 🌟";
+    if (score < 180) return "You're not just sitting, you’re winning! 🏆";
+    if (score < 200) return "Impressive! You're a chair-catching pro! 💪";
+    if (score < 220) return "Slaying the chair game like a true legend. 👑";
+    if (score < 240) return "Chair boss mode: ACTIVATED! 💪🪑";
+    if (score < 260) return "Amazing skills! You're on fire! 🔥";
+    if (score < 280) return "Incredible! You're a chair-catching legend! 👑";
+    if (score < 300) return "Chair-s to you for hitting that score! 😏";
+    if (score < 320) return "You're really pulling up a chair to success! 💪🪑";
+    if (score < 340) return "Phenomenal! You're defying gravity! 🚀";
+    if (score < 360) return "Outstanding! You're a true chair savior! 🦸";
+    if (score < 380) return "You’re catching chairs like they're Pokémons! Gotta catch 'em all! 🔥";
+    if (score < 400) return "Chair-catching champion of the world! 🎉🏆";
+    if (score < 420) return "Magnificent! You're the hero chairs deserve! 🏆";
+    if (score < 440) return "You're really sitting on top of the world right now! 🌍🪑";
+    if (score < 460) return "Legendary! Your chair-saving skills are unmatched! 🌟";
+    if (score < 480) return "Godlike! You've ascended to chair-catching divinity! 🙌";
+    if (score < 500) return "You’ve taken chair catching to the next level—what a chair-eer! 🚀";
+    if (score < 520) return "Are you even sitting? This is otherworldly! 🛸🪑";
+    if (score < 540) return "Chair-whisperer level unlocked! 🪑🔮";
+    if (score < 560) return "If chairs could talk, they'd ask for your autograph. 🪑🖊️";
+    if (score < 580) return "Your chair-catching game is stronger than Wi-Fi signals! 📶🪑";
+    if (score < 600) return "You've got more chairs than IKEA! 🏬🪑";
+    if (score < 620) return "Your chair game is so strong, it’s giving main character energy. 🌟🪑";
+    if (score < 640) return "You're the CEO of chair catching! 🏢🪑";
+    if (score < 660) return "You're reclining into greatness, one chair at a time! 🛋️";
+    if (score < 680) return "You’re sitting pretty at the top of the leaderboard! 👑🪑";
+    if (score < 700) return "You’ve officially leveled up to chair-catching elite! 🥇🪑";
+    return "Beyond imagination! You've transcended mortal chair-catching abilities! 🌌";
+}
+
 
         function restartGame() {
             cancelAnimationFrame(gameLoopId);
