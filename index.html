@@ -157,8 +157,8 @@
         let chairHP = 5;
         let audioContext;
         let gameTime = 0;
-        let spawnRate = 2000; // in milliseconds
-        let fallSpeed = 2;
+        let spawnRate = 1500; // in milliseconds
+        let fallSpeed = 3;
         let gameLoopId;
         let spawnIntervalId;
         let isPaused = false;
@@ -223,10 +223,10 @@
 
         function startGame() {
             score = 0;
-            chairHP = 5;
+            chairHP = 1;
             gameTime = 0;
-            spawnRate = 2000;
-            fallSpeed = 2;
+            spawnRate = 1000;
+            fallSpeed = 4;
             updateScore();
             updateChairHP();
             gameOverScreen.style.display = 'none';
@@ -276,11 +276,11 @@
             }
 
             gameTime++;
-            if (gameTime % 300 === 0) { // Every 5 seconds (60 fps * 5)
-                fallSpeed *= 1.2; // Increase fall speed by 20%
+            if (gameTime % 300 === 0) {
+                fallSpeed *= 1.2;
             }
-            if (gameTime % 600 === 0) { // Every 10 seconds
-                spawnRate = Math.max(500, spawnRate * 0.8); // Decrease spawn rate by 20% (increase frequency)
+            if (gameTime % 600 === 0) {
+                spawnRate = Math.max(200, spawnRate * 0.5);
                 updateSpawnRate();
             }
 
@@ -290,17 +290,17 @@
                 const emojiRect = emoji.getBoundingClientRect();
                 const basketRect = basket.getBoundingClientRect();
 
-                emoji.style.top = `${emojiRect.top + fallSpeed}px`;
+                emoji.style.top = `${parseFloat(emoji.style.top || 0) + fallSpeed}px`;
 
                 if (emojiRect.bottom >= basketRect.top &&
                     emojiRect.left < basketRect.right &&
                     emojiRect.right > basketRect.left) {
                     if (emoji.textContent === '💸') {
-                        chairHP += 3;
+                        chairHP += 2;
                         updateChairHP();
                         playMoneyCaughtSound();
                     } else if (emoji.textContent === '🧟') {
-                        chairHP -= 10;
+                        chairHP -= 20;
                         updateChairHP();
                         playZombieCaughtSound();
                     } else if (emoji.textContent === '❤️‍🔥') {
@@ -319,9 +319,7 @@
                         endGame();
                         return;
                     }
-                }
-
-                if (emojiRect.top >= gameArea.clientHeight) {
+                } else if (parseFloat(emoji.style.top) >= gameArea.clientHeight) {
                     if (emoji.textContent === '🪑') {
                         chairHP--;
                         updateChairHP();
