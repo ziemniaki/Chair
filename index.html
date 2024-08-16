@@ -29,19 +29,18 @@
         }
 
         #basket {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            height: 40px;
-            background-color: brown;
-            border-radius: 10px;
-            transform: translateX(-50%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 18px;
-            color: white;
-        }
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    height: 40px;
+    background-color: brown;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    color: white;
+}
 
         #scoreBoard {
             position: absolute;
@@ -436,10 +435,16 @@
         }
 
         function handleTouchMove(e) {
-            const touchX = e.touches[0].clientX;
-            const basketX = touchX - basket.clientWidth / 2;
-            basket.style.left = `${Math.max(0, Math.min(gameArea.clientWidth - basket.clientWidth, basketX))}px`;
-        }
+    const touchX = e.touches[0].clientX;
+    const basketWidth = basket.clientWidth;
+    const gameAreaWidth = gameArea.clientWidth;
+    const maxLeft = gameAreaWidth - basketWidth;
+    
+    let basketX = touchX - basketWidth / 2;
+    basketX = Math.max(0, Math.min(maxLeft, basketX));
+    
+    basket.style.left = `${basketX}px`;
+}
 
         gameArea.addEventListener('touchmove', handleTouchMove);
 
