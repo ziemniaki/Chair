@@ -103,6 +103,24 @@
         .selectButton:hover {
             background-color: #666;
         }
+
+        #loveAd {
+            display: none;
+            position: absolute;
+            top: 50%;
+            font-size: 72px;
+            color: pink;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            white-space: nowrap;
+        }
+
+        #characterMessage {
+            font-size: 20px;
+            margin-bottom: 20px;
+            max-width: 80%;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -110,6 +128,7 @@
         <div id="scoreBoard">Gentle👔Score: 0</div>
         <div id="chancesLeft">Chair❤️‍🔥HP: 5</div>
         <div id="basket"></div>
+        <div id="loveAd">LOVE AD</div>
         <div id="gameOver">
             Game Over 😪<br>
             Your Gentle👔Score: <span id="finalScore"></span><br>
@@ -117,6 +136,7 @@
             <button onclick="restartGame()">Play Again</button>
         </div>
         <div id="characterSelect">
+            <div id="characterMessage">Please! 🗣 Be a gentleperson – help us save these chairs! 🥀</div>
             <div>Select Your Character:</div>
             <button class="selectButton" onclick="selectCharacter('Cura')">CU🧑‍✈️RA</button>
             <button class="selectButton" onclick="selectCharacter('Hubert')">HUB🧑‍✈️ERT</button>
@@ -131,12 +151,17 @@
         const gameOverScreen = document.getElementById('gameOver');
         const characterSelectScreen = document.getElementById('characterSelect');
         const finalScore = document.getElementById('finalScore');
+        const loveAd = document.getElementById('loveAd');
 
         let score = 0;
         let chairHP = 5;
         let audioContext;
         let gameTime = 0;
-        let spawnRate = 0.02;
+        let spawnRate = 2000; // in milliseconds
+        let fallSpeed = 2;
+        let gameLoopId;
+        let spawnIntervalId;
+        let isPaused = false;
 
         function initAudio() {
             audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -200,13 +225,20 @@
             score = 0;
             chairHP = 5;
             gameTime = 0;
-            spawnRate = 0.02;
+            spawnRate = 2000;
+            fallSpeed = 2;
             updateScore();
             updateChairHP();
             gameOverScreen.style.display = 'none';
             characterSelectScreen.style.display = 'none';
             basket.style.left = '50%';
-            gameLoop();
+            updateSpawnRate();
+            gameLoopId = requestAnimationFrame(gameLoop);
+        }
+
+        function updateSpawnRate() {
+            clearInterval(spawnIntervalId);
+            spawnIntervalId = setInterval(createFallingEmoji, spawnRate);
         }
 
         function updateScore() {
@@ -218,6 +250,8 @@
         }
 
         function createFallingEmoji() {
+            if (isPaused) return;
+
             const emoji = document.createElement('div');
             emoji.classList.add('fallingEmoji');
             const random = Math.random();
@@ -225,6 +259,8 @@
                 emoji.textContent = '🧟';
             } else if (random < 0.11) {
                 emoji.textContent = '💸';
+            } else if (random < 0.13) {
+                emoji.textContent = '❤️‍🔥';
             } else {
                 emoji.textContent = '🪑';
             }
@@ -234,20 +270,31 @@
         }
 
         function gameLoop() {
+            if (isPaused) {
+                gameLoopId = requestAnimationFrame(gameLoop);
+                return;
+            }
+
             gameTime++;
-            spawnRate = Math.min(0.1, 0.02 + gameTime * 0.0001);
+            if (gameTime % 300 === 0) { // Every 5 seconds (60 fps * 5)
+                fallSpeed *= 1.2; // Increase fall speed by 20%
+            }
+            if (gameTime % 600 === 0) { // Every 10 seconds
+                spawnRate = Math.max(500, spawnRate * 0.8); // Decrease spawn rate by 20% (increase frequency)
+                updateSpawnRate();
+            }
 
             const emojis = document.getElementsByClassName('fallingEmoji');
-            for (let i = 0; i < emojis.length; i++) {
+            for (let i = emojis.length - 1; i >= 0; i--) {
                 const emoji = emojis[i];
                 const emojiRect = emoji.getBoundingClientRect();
                 const basketRect = basket.getBoundingClientRect();
 
-                emoji.style.top = `${emojiRect.top + 5}px`;
+                emoji.style.top = `${emojiRect.top + fallSpeed}px`;
 
                 if (emojiRect.bottom >= basketRect.top &&
-                    emojiRect.left >= basketRect.left &&
-                    emojiRect.right <= basketRect.right) {
+                    emojiRect.left < basketRect.right &&
+                    emojiRect.right > basketRect.left) {
                     if (emoji.textContent === '💸') {
                         chairHP += 3;
                         updateChairHP();
@@ -256,6 +303,12 @@
                         chairHP -= 10;
                         updateChairHP();
                         playZombieCaughtSound();
+                    } else if (emoji.textContent === '❤️‍🔥') {
+                        score += 10;
+                        chairHP++;
+                        updateChairHP();
+                        updateScore();
+                        activateLoveAd();
                     } else {
                         playChairCaughtSound();
                         score++;
@@ -282,14 +335,32 @@
                 }
             }
 
-            if (Math.random() < spawnRate) {
-                createFallingEmoji();
+            gameLoopId = requestAnimationFrame(gameLoop);
+        }
+
+        function activateLoveAd() {
+            isPaused = true;
+            loveAd.style.display = 'block';
+            loveAd.style.left = gameArea.clientWidth + 'px';
+            let position = gameArea.clientWidth;
+
+            function moveAd() {
+                if (position < -loveAd.clientWidth) {
+                    loveAd.style.display = 'none';
+                    isPaused = false;
+                } else {
+                    position -= 10;
+                    loveAd.style.left = position + 'px';
+                    requestAnimationFrame(moveAd);
+                }
             }
 
-            requestAnimationFrame(gameLoop);
+            moveAd();
         }
 
         function endGame() {
+            cancelAnimationFrame(gameLoopId);
+            clearInterval(spawnIntervalId);
             finalScore.textContent = score;
             const customMessage = document.getElementById('customMessage');
             customMessage.textContent = getCustomMessage(score);
@@ -306,10 +377,16 @@
             if (score < 50) return "Incredible! You're a chair-catching legend! 👑";
             if (score < 68) return "Phenomenal! You're defying gravity! 🚀";
             if (score === 69) return "Nice. 😏";
-            return "Unbelievable! You've mastered the art of chair-catching! 🏆";
+            if (score < 100) return "Outstanding! You're a true chair savior! 🦸";
+            if (score < 120) return "Magnificent! You're the hero chairs deserve! 🏆";
+            if (score < 150) return "Legendary! Your chair-saving skills are unmatched! 🌟";
+            if (score < 200) return "Godlike! You've ascended to chair-catching divinity! 🙌";
+            return "Beyond imagination! You've transcended mortal chair-catching abilities! 🌌";
         }
 
         function restartGame() {
+            cancelAnimationFrame(gameLoopId);
+            clearInterval(spawnIntervalId);
             const emojis = document.getElementsByClassName('fallingEmoji');
             while (emojis.length > 0) {
                 gameArea.removeChild(emojis[0]);
